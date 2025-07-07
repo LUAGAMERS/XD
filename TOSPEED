@@ -1,0 +1,31 @@
+-- LocalScript en StarterPlayerScripts
+local Player = game:GetService("Players").LocalPlayer
+local velocidadNormal = 16
+local velocidadBoost = 22
+local activado = false
+
+-- Función para actualizar velocidad
+local function actualizarVelocidad()
+    if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+        Player.Character.Humanoid.WalkSpeed = activado and velocidadBoost or velocidadNormal
+    end
+end
+
+-- Configurar nuevo personaje (al morir y respawnear)
+Player.CharacterAdded:Connect(function(character)
+    character:WaitForChild("Humanoid")
+    actualizarVelocidad() -- Aplica la velocidad actual al nuevo cuerpo
+end)
+
+-- Control de tecla Shift
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.LeftShift then
+        activado = not activado
+        actualizarVelocidad()
+    end
+end)
+
+-- Aplicar al cargar
+if Player.Character then
+    actualizarVelocidad()
+end
