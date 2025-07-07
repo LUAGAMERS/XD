@@ -1,0 +1,39 @@
+-- LocalScript en StarterPlayerScripts
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local activado = false
+local conexionSalto
+
+-- Función para manejar el toggle
+local function toggleSalto()
+    activado = not activado
+    if activado then
+        conexionSalto = UserInputService.JumpRequest:Connect(function()
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:ChangeState("Jumping")
+            end
+        end)
+    else
+        if conexionSalto then
+            conexionSalto:Disconnect()
+        end
+    end
+end
+
+-- Detector de tecla P
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.P then
+        toggleSalto()
+    end
+end)
+
+-- Resetear al cambiar de personaje
+player.CharacterAdded:Connect(function()
+    if activado then
+        toggleSalto()
+        toggleSalto() -- Reconectar con el nuevo personaje
+    end
+end)
